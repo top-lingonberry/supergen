@@ -10,6 +10,7 @@ description = "A simple binary for generating a user with an SHA-256 encrypted p
 [dependencies]
 
 clap = { version = "3.1", features = ["derive"] }
+data-encoding = "2.3"
 postgres = "0.19"
 postgres-openssl = "0.5"
 ring = "0.16"
