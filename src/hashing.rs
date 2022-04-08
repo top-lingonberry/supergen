@@ -4,7 +4,9 @@ use ring::rand::SecureRandom;
 use ring::{digest, pbkdf2, rand};
 use std::num::NonZeroU32;
 
-pub fn hash_pasword(plaintext: String) -> Result<(), Unspecified> {
+// Takes a plaintext password &str and returns a tuple of the randomly generated
+// salt and the password hash.
+pub fn hash_pasword(plaintext: &str) -> Result<(String, String), Unspecified> {
     const CREDENTIAL_LEN: usize = digest::SHA256_OUTPUT_LEN;
     let n_iter = NonZeroU32::new(100_000).unwrap();
     let rng = rand::SystemRandom::new();
@@ -21,8 +23,9 @@ pub fn hash_pasword(plaintext: String) -> Result<(), Unspecified> {
         password.as_bytes(),
         &mut pbkdf2_hash,
     );
-    println!("Salt: {}", HEXUPPER.encode(&salt));
-    println!("PBKDF2 hash: {}", HEXUPPER.encode(&pbkdf2_hash));
 
-    Ok(())
+    let salt: String = HEXUPPER.encode(&salt);
+    let password_hash: String = HEXUPPER.encode(&pbkdf2_hash);
+
+    Ok((salt, password_hash))
 }
