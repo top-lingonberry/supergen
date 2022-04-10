@@ -2,6 +2,7 @@ use clap::Command;
 use ring::error::Unspecified;
 
 mod arguments;
+mod client;
 mod hashing;
 
 const ABOUT: &str = env!("CARGO_PKG_DESCRIPTION");
@@ -21,8 +22,8 @@ fn main() -> Result<(), Unspecified> {
     let password: &str = app.value_of("password").expect("Missing parameter --password.");
     let (salt, password_hash) = crate::hashing::hash_pasword(password)?;
     println!("The provided username is: {}", username);
-    println!("The salt is: {}", salt);
-    println!("The password hash is: {}", password_hash);
+    println!("The salt is: {:?}", salt);
+    println!("The password hash is: {:?}", password_hash);
 
     Ok(())
 }
