@@ -8,9 +8,8 @@ description = "A simple binary for generating a user with an SHA-256 encrypted p
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-
-clap = { version = "3.1", features = ["derive"] }
 data-encoding = "2.3"
 postgres = "0.19"
 postgres-openssl = "0.5"
 ring = "0.16"
+rpassword = "6.0"
