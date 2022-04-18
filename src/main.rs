@@ -25,7 +25,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Ensure the two password entries match. Raises an error if not.
     let validated_password: &str = crate::hashing::check_matches(password1, &password2)?;
 
-    let (salt, password_hash) = crate::hashing::hash_pasword(validated_password)?;
+    let (salt, password_hash) = crate::hashing::encrypt_password(validated_password)?;
     println!("The provided username is: {}", username);
     println!("The salt is: {:?}", salt);
     println!("The password hash is: {:?}", password_hash);

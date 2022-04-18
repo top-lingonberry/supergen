@@ -5,6 +5,8 @@ use std::num::NonZeroU32;
 
 use crate::errors::{HashingError, MismatchError};
 
+const CREDENTIAL_LEN: usize = digest::SHA256_OUTPUT_LEN;
+
 // Takes two password inputs and returns Ok if the password matches. Error if not.
 pub fn check_matches(entry1: String, entry2: &str)
                             -> Result<&str, Box< dyn std::error::Error>> {
@@ -15,28 +17,41 @@ pub fn check_matches(entry1: String, entry2: &str)
     }
 }
 
-// New function here to hash password on fill salt. Return the tuple to hash_password.
-// Implemented purely to handle the "Unspecified" error from the ring crate.
-
-// Takes a plaintext password &str and returns a tuple of the randomly generated
-// salt and the password hash.
-pub fn hash_pasword(plaintext: &str) -> Result<([u8; 32], [u8; 32]), Box<dyn std::error::Error>> {
-    const CREDENTIAL_LEN: usize = digest::SHA256_OUTPUT_LEN;
+// Generate the salt for the password hash.
+// Seperate function to handle ring::error::Unspecified.
+fn generate_salt() -> Result<[u8; 32], ring::error::Unspecified> {
     let n_iter = NonZeroU32::new(100_000).unwrap();
     let rng = rand::SystemRandom::new();
 
     let mut salt = [0u8; CREDENTIAL_LEN];
-    let fill = rng.fill(&mut salt);
+    let fill = rng.fill(&mut salt)?;
+    Ok(salt)
+}
 
-    match fill 
+// Return the salt, converting the ring::error::Unspecified to a custom error
+// implementing std::error::Error.
+fn get_salt() -> Result<[u8; 32], Box<dyn std::error::Error>> {
+    match generate_salt() {
+        Ok(s) => Ok(s), 
+        Err(s) => Err(Box::new(HashingError))
+    }
+}
 
-    let password = plaintext;
+// New function here to hash password on fill salt. Return the tuple to hash_password.
+// Implemented purely to handle the "Unspecified" error from the ring crate.
+pub fn encrypt_password(plain_text: &str)
+                    -> Result<([u8; 32], [u8; 32]), Box<dyn std::error::Error>> {
+    
+    let n_iter = NonZeroU32::new(100_000).unwrap();
+
+    let salt = get_salt()?;
+
     let mut pbkdf2_hash = [0u8; CREDENTIAL_LEN];
     pbkdf2::derive(
         pbkdf2::PBKDF2_HMAC_SHA256,
         n_iter,
         &salt,
-        password.as_bytes(),
+        plain_text.as_bytes(),
         &mut pbkdf2_hash,
     );
 
