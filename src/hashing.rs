@@ -3,7 +3,7 @@ use ring::rand::SecureRandom;
 use ring::{digest, pbkdf2, rand};
 use std::num::NonZeroU32;
 
-use crate::errors::{HashingError, MismatchError};
+use crate::errors::{ErrorType, SupergenError};
 
 const CREDENTIAL_LEN: usize = digest::SHA256_OUTPUT_LEN;
 
@@ -13,28 +13,22 @@ pub fn check_matches(entry1: String, entry2: &str)
     
     match entry1.eq(&entry2) {
         true => Ok(entry2),
-        false => Err(Box::new(MismatchError))
+        false => Err(Box::new(
+            SupergenError {
+                error_type: ErrorType::MismatchError
+            }
+        ))
     }
 }
 
 // Generate the salt for the password hash.
 // Seperate function to handle ring::error::Unspecified.
-fn generate_salt() -> Result<[u8; 32], ring::error::Unspecified> {
-    let n_iter = NonZeroU32::new(100_000).unwrap();
+fn get_salt() -> Result<[u8; 32], SupergenError> {
     let rng = rand::SystemRandom::new();
 
     let mut salt = [0u8; CREDENTIAL_LEN];
-    let fill = rng.fill(&mut salt)?;
+    let _fill = rng.fill(&mut salt)?;
     Ok(salt)
-}
-
-// Return the salt, converting the ring::error::Unspecified to a custom error
-// implementing std::error::Error.
-fn get_salt() -> Result<[u8; 32], Box<dyn std::error::Error>> {
-    match generate_salt() {
-        Ok(s) => Ok(s), 
-        Err(s) => Err(Box::new(HashingError))
-    }
 }
 
 // New function here to hash password on fill salt. Return the tuple to hash_password.
