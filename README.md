@@ -1,9 +1,6 @@
 # Supergen
 
-Supergen is a very simple binary application which takes three values:
-1. A username, in the form of a --username value in the command line.
-2. A password, in the form of a --password value in the command line.
-3. A database url, in the form of an environment variable by the name "SUPERGEN_DB_URL".
+Supergen is a very simple binary application which prompts for a username and password. Using an env variable by the name "SUPERGEN_DB_URL", it securely transfers the data to a Postgresql database.
 
 The application creates a table (if it doesn't exist) in the database to store a username (VARCHAR), salt (BYTEA) and pbkdf2 sha256 hashed password (BYTEA). This is sent to the database either securely (with a self generated SSL .pem cert) or without TLS.
 
