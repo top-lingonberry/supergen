@@ -4,7 +4,7 @@ use std::io::Write;
 mod client;
 mod errors;
 mod hashing;
-mod sql;
+mod queries;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Username prompt. Flushes the prompt on stdout so that entry occurs
@@ -25,8 +25,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Ensure the two password entries match. Raises an error if not.
     let validated_password: &str = crate::hashing::check_matches(password1, &password2)?;
 
+    // Return the randomly generated salt and hashed password as byte arrays. 
     let (salt, password_hash) = crate::hashing::encrypt_password(validated_password)?;
-    println!("The provided username is: {}", username);
+    let mut client = crate::client::client()?;
+    crate::queries::create_table(&mut client)?;
+    crate::queries::create_user(&mut client, username, &salt, &password_hash)?;
+
     println!("The salt is: {:?}", salt);
     println!("The password hash is: {:?}", password_hash);
 
