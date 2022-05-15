@@ -50,7 +50,10 @@ pub fn username() -> Result<String, Box<dyn std::error::Error>> {
         // character limit. Return the username if ok. Loop in case of Err.
         match crate::inputs::validate_username_length(&username) {
             Ok(_) => break Ok(username),
-            Err(_) => continue
+            Err(e) => {
+                println!("{}", e);
+                continue
+            }
         }
     }
 }
@@ -67,7 +70,10 @@ pub fn password() -> Result<String, Box<dyn std::error::Error>> {
         // If previous function returns ok, 
         match validated_password {
             Ok(value) => break Ok(value),
-            Err(_) => continue
+            Err(e) => {
+                println!("{}", e);
+                continue
+            }
         }
     }
 }

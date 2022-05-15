@@ -16,7 +16,7 @@ impl std::fmt::Display for SupergenError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self.error_type {
             ErrorType::CryptoError => write!(f, "An unknown error occuring during password encryption."),
-            ErrorType::MismatchError => write!(f, "The given passwords did not match. Please try again."),
+            ErrorType::MismatchError => write!(f, "The entered passwords did not match. Please try again."),
             ErrorType::InvalidUsernameError => write!(f, "The username cannot exceed 320 characters. Please try again.")
         }
         
