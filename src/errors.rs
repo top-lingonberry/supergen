@@ -1,7 +1,8 @@
 #[derive(Debug, Clone)]
 pub enum ErrorType {
     CryptoError,
-    MismatchError
+    MismatchError,
+    InvalidUsernameError
 }
 
 #[derive(Debug, Clone)]
@@ -14,8 +15,9 @@ impl std::error::Error for SupergenError {}
 impl std::fmt::Display for SupergenError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self.error_type {
-            ErrorType::CryptoError => write!(f, "An error occuring during password encryption. Please try again."),
-            ErrorType::MismatchError => write!(f, "The given passwords did not match. Please try again.")
+            ErrorType::CryptoError => write!(f, "An unknown error occuring during password encryption."),
+            ErrorType::MismatchError => write!(f, "The given passwords did not match. Please try again."),
+            ErrorType::InvalidUsernameError => write!(f, "The username cannot exceed 320 characters. Please try again.")
         }
         
     }

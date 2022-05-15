@@ -1,6 +1,6 @@
 use postgres::Client;
 
-static CREATE_TABLE: &str = "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username VARCHAR(255) UNIQUE NOT NULL, salt BYTEA NOT NULL, password BYTEA NOT NULL);";
+static CREATE_TABLE: &str = "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username VARCHAR(320) UNIQUE NOT NULL, salt BYTEA NOT NULL, password BYTEA NOT NULL);";
 static CREATE_USER: &str = "INSERT INTO users VALUES (default, $1, $2, $3)";
 
 pub fn create_table(client: &mut Client) -> Result<(), Box<dyn std::error::Error>> {
